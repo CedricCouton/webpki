@@ -58,7 +58,7 @@ pub struct SignedData<'a> {
 ///     certs [0] EXPLICIT SEQUENCE OF Certificate OPTIONAL
 /// }
 /// ```
-/// 
+///
 /// Note that this function does NOT parse the outermost `SEQUENCE` or the
 /// `certs` value.
 ///
@@ -153,6 +153,7 @@ pub(crate) fn verify_signature(
         .matches_algorithm_id_value(spki.algorithm_id_value)
     {
         return Err(Error::UnsupportedSignatureAlgorithmForPublicKey);
+
     }
     signature::UnparsedPublicKey::new(
         signature_alg.verification_alg,
@@ -215,6 +216,13 @@ pub static ECDSA_P384_SHA384: SignatureAlgorithm = SignatureAlgorithm {
     public_key_alg_id: ECDSA_P384,
     signature_alg_id: ECDSA_SHA384,
     verification_alg: &signature::ECDSA_P384_SHA384_ASN1,
+};
+
+/// RSA PKCS#1 1.5 signatures using SHA-1 for keys of 2048-8192 bits.
+pub static RSA_PKCS1_2048_8192_SHA1: SignatureAlgorithm = SignatureAlgorithm {
+    public_key_alg_id: RSA_ENCRYPTION,
+    signature_alg_id: RSA_PKCS1_SHA1,
+    verification_alg: &signature::RSA_PKCS1_2048_8192_SHA1_FOR_LEGACY_USE_ONLY,//RSA_PKCS1_2048_8192_SHA1 doesn't still exists
 };
 
 /// RSA PKCS#1 1.5 signatures using SHA-256 for keys of 2048-8192 bits.
@@ -306,6 +314,10 @@ const ECDSA_SHA384: AlgorithmIdentifier = AlgorithmIdentifier {
 
 const RSA_ENCRYPTION: AlgorithmIdentifier = AlgorithmIdentifier {
     asn1_id_value: untrusted::Input::from(include_bytes!("data/alg-rsa-encryption.der")),
+};
+
+const RSA_PKCS1_SHA1: AlgorithmIdentifier = AlgorithmIdentifier {
+    asn1_id_value: untrusted::Input::from(include_bytes!("data/alg-rsa-pkcs1-sha1.der")),
 };
 
 const RSA_PKCS1_SHA256: AlgorithmIdentifier = AlgorithmIdentifier {
